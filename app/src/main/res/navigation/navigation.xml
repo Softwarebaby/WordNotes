@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/navigation"
+    app:startDestination="@id/wordFragment">
+
+    <fragment
+        android:id="@+id/wordFragment"
+        android:name="software.baby.wordnotes.view.WordFragment"
+        android:label="单词本">
+        <action
+            android:id="@+id/action_wordFragment_to_noteFragment"
+            app:destination="@id/noteFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/noteFragment"
+        android:name="software.baby.wordnotes.view.NoteFragment"
+        android:label="添加单词" />
+</navigation>
