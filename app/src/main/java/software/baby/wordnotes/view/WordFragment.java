@@ -23,10 +23,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
@@ -46,6 +48,7 @@ public class WordFragment extends Fragment {
     private WordViewModel wordViewModel;
     private WordAdapter wordAdapter1, wordAdapter2;
     private LiveData<List<Word>> filterWords;
+    private List<Word> allWords;
 
     private RecyclerView recyclerView;
     private FloatingActionButton floatingActionButton;
@@ -104,6 +107,7 @@ public class WordFragment extends Fragment {
         filterWords.observe(getViewLifecycleOwner(), new Observer<List<Word>>() {
             @Override
             public void onChanged(List<Word> words) {
+                allWords = words;
                 int temp = wordAdapter1.getItemCount();
                 if (temp != words.size()) {
                     //当数据发生变化，列表平滑滚动，防止数据较多时，列表无反馈
@@ -114,6 +118,28 @@ public class WordFragment extends Fragment {
                 }
             }
         });
+
+        //recyclerView添加触摸辅助工具
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.START | ItemTouchHelper.END) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                final Word wordToDelete = allWords.get(viewHolder.getAdapterPosition());
+                wordViewModel.deleteWords(wordToDelete);
+                Snackbar.make(activity.findViewById(R.id.wordFragmentView), "删除了一个词汇", Snackbar.LENGTH_SHORT)
+                        .setAction("撤销", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                wordViewModel.insertWords(wordToDelete);
+                            }
+                        })
+                        .show();
+            }
+        }).attachToRecyclerView(recyclerView);
 
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,6 +170,7 @@ public class WordFragment extends Fragment {
                 filterWords.observe(activity, new Observer<List<Word>>() {
                     @Override
                     public void onChanged(List<Word> words) {
+                        allWords = words;
                         int temp = wordAdapter1.getItemCount();
                         if (temp != words.size()) {
                             wordAdapter1.submitList(words);
