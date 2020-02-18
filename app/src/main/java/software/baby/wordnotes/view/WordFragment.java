@@ -129,9 +129,17 @@ public class WordFragment extends Fragment {
         });
 
         //recyclerView添加触摸辅助工具
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.START | ItemTouchHelper.END) {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.START | ItemTouchHelper.END) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                Word wordFrom = allWords.get(viewHolder.getAdapterPosition());
+                Word wordTo = allWords.get(target.getAdapterPosition());
+                int idTemp = wordFrom.getId();
+                wordFrom.setId(wordTo.getId());
+                wordTo.setId(idTemp);
+                wordViewModel.updateWords(wordFrom, wordTo);
+                wordAdapter1.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                wordAdapter2.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
                 return false;
             }
 
