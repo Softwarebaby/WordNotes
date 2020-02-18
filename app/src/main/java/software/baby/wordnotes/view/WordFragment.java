@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -53,6 +54,7 @@ public class WordFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private FloatingActionButton floatingActionButton;
+    private DividerItemDecoration dividerItemDecoration;
 
     @Nullable
     @Override
@@ -71,6 +73,7 @@ public class WordFragment extends Fragment {
 
         recyclerView = activity.findViewById(R.id.recyclerView);
         floatingActionButton = activity.findViewById(R.id.floatingActionButton);
+        dividerItemDecoration = new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(activity));
         //当动画结束时，刷新序列号
@@ -101,6 +104,7 @@ public class WordFragment extends Fragment {
             recyclerView.setAdapter(wordAdapter2);
         } else {
             recyclerView.setAdapter(wordAdapter1);
+            recyclerView.addItemDecoration(dividerItemDecoration);
         }
 
         filterWords = wordViewModel.getAllWordsLive();
@@ -216,9 +220,11 @@ public class WordFragment extends Fragment {
                 boolean viewType = shp.getBoolean(IS_USING_CARD_VIEW, false);
                 if (viewType) {
                     recyclerView.setAdapter(wordAdapter1);
+                    recyclerView.addItemDecoration(dividerItemDecoration);
                     editor.putBoolean(IS_USING_CARD_VIEW, false);
                 } else {
                     recyclerView.setAdapter(wordAdapter2);
+                    recyclerView.removeItemDecoration(dividerItemDecoration);
                     editor.putBoolean(IS_USING_CARD_VIEW, true);
                 }
                 editor.apply();
