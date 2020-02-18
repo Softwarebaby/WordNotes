@@ -100,7 +100,8 @@ public class WordFragment extends Fragment {
         }
 
         filterWords = wordViewModel.getAllWordsLive();
-        filterWords.observe(activity, new Observer<List<Word>>() {
+        //BugFix：将Fragment的View作为LifecycleOwner，防止监听重叠而导致的闪屏现象
+        filterWords.observe(getViewLifecycleOwner(), new Observer<List<Word>>() {
             @Override
             public void onChanged(List<Word> words) {
                 int temp = wordAdapter1.getItemCount();
