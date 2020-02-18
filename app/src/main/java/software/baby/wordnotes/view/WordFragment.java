@@ -49,6 +49,7 @@ public class WordFragment extends Fragment {
     private WordAdapter wordAdapter1, wordAdapter2;
     private LiveData<List<Word>> filterWords;
     private List<Word> allWords;
+    private boolean undoAction;
 
     private RecyclerView recyclerView;
     private FloatingActionButton floatingActionButton;
@@ -110,8 +111,12 @@ public class WordFragment extends Fragment {
                 allWords = words;
                 int temp = wordAdapter1.getItemCount();
                 if (temp != words.size()) {
-                    //当数据发生变化，列表平滑滚动，防止数据较多时，列表无反馈
-                    recyclerView.smoothScrollBy(0, -200);
+                    //BugFix：当删除且不撤销时不向下滚动
+                    if (temp < words.size() && !undoAction) {
+                        //当数据发生变化，列表平滑滚动，防止数据较多时，列表无反馈
+                        recyclerView.smoothScrollBy(0, -200);
+                    }
+                    undoAction = false;
                     //提交的数据列表，会在后台进行差异化比较，并根据对比结果，来刷新页面
                     wordAdapter1.submitList(words);
                     wordAdapter2.submitList(words);
@@ -134,6 +139,7 @@ public class WordFragment extends Fragment {
                         .setAction("撤销", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                undoAction = true;
                                 wordViewModel.insertWords(wordToDelete);
                             }
                         })
